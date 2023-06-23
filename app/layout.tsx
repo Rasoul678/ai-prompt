@@ -1,17 +1,23 @@
 import "@styles/globals.css";
 import Nav from "@components/Nav";
 import Provider from "@components/Provider";
+import { Session } from "next-auth";
+
+interface IProps {
+  session: Session | null;
+  children: React.ReactNode;
+}
 
 export const metadata = {
   title: "AI Prompt",
   description: "Discover & Share AI Prompts",
 };
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children, session }: IProps) => {
   return (
     <html lang="en">
       <body>
-        {/* <Provider> */}
+        <Provider session={session}>
           <div className="main">
             <div className="gradient" />
           </div>
@@ -19,7 +25,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             <Nav />
             {children}
           </main>
-        {/* </Provider> */}
+        </Provider>
       </body>
     </html>
   );

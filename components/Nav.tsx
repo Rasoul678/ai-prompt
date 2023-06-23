@@ -22,7 +22,8 @@ type ProvidersType = Record<
 > | null;
 
 const Nav: React.FC<IProps> = (props) => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
+  const isUserLoggedIn = session?.user;
 
   const [providers, setProviders] = useState<ProvidersType>(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
@@ -65,7 +66,7 @@ const Nav: React.FC<IProps> = (props) => {
             </button>
             <Link href="/profile">
               <Image
-                src={Logo}
+                src={session.user.image || ""}
                 alt="profile"
                 className="rounded-full"
                 width={35}
@@ -97,7 +98,7 @@ const Nav: React.FC<IProps> = (props) => {
         {isUserLoggedIn ? (
           <div className="flex">
             <Image
-              src={Logo}
+              src={session.user.image || ""}
               alt="profile"
               className="rounded-full"
               width={35}

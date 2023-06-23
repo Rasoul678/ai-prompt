@@ -6,7 +6,7 @@ import type { Session } from "next-auth";
 
 interface IProps {
   children: React.ReactNode;
-  session: Session;
+  session: Session | null;
 }
 
 const Provider: React.FC<IProps> = ({ children, session }) => {
