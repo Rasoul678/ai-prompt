@@ -1,40 +1,56 @@
-import User from "@models/user";
-import { connectToDB } from "@utils/database";
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import { addDocument, getDocument } from "@utils/firebase/firestore";
 
 const handler = NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    GitHubProvider({
+      clientId: String(process.env.GITHUB_CLIENT_ID),
+      clientSecret: String(process.env.GITHUB_CLIENT_SECRET),
     }),
   ],
   callbacks: {
     session: async ({ session }) => {
       return session;
     },
-    signIn: async ({ profile }) => {
+    signIn: async ({ user }) => {
+      let isAllowedToSignIn = true;
+
       try {
-        await connectToDB();
+        // //! Check if a user already exists
+        const { result, error: errInGet } = await getDocument({
+          collection: "users",
+          id: user.id,
+        });
 
-        //! Check if a user already exists
-        const userExists = await User.findOne({ email: profile!.email });
-
-        //! If not, create a new user
-        if (!userExists) {
-          await User.create({
-            email: profile!.email,
-            username: profile!.name?.replace(" ", "").toLowerCase(),
-            image: profile!.image,
-          });
+        if (errInGet) {
+          isAllowedToSignIn = false;
         }
 
-        return true;
+        // //! If not, create a new user
+        if (!result?.exists()) {
+          const newUser = {
+            email: user!.email,
+            username: user!.name?.replace(" ", "").toLowerCase(),
+            image: user!.image,
+          };
+
+          const { error: errInAdd } = await addDocument({
+            colllection: "users",
+            id: user.id,
+            data: newUser,
+          });
+
+          if (errInAdd) {
+            isAllowedToSignIn = false;
+          }
+        }
       } catch (error) {
         console.log(error);
-        return false;
+        isAllowedToSignIn = false;
       }
+
+      return isAllowedToSignIn;
     },
   },
 });
