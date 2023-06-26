@@ -1,6 +1,10 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { addDocument, getDocument } from "@utils/firebase/firestore";
+import {
+  addDocument,
+  getDocument,
+  getDocumentBy,
+} from "@utils/firebase/firestore";
 
 const handler = NextAuth({
   providers: [
@@ -11,6 +15,19 @@ const handler = NextAuth({
   ],
   callbacks: {
     session: async ({ session }) => {
+      const querySnapshot = await getDocumentBy({
+        collection: "users",
+        where: "email",
+        needle: session.user.email,
+      });
+
+      const userIds: string[] = [];
+
+      querySnapshot.result?.forEach((doc) => {
+        userIds.push(doc.id);
+      });
+
+      session.user.id = userIds[0];
       return session;
     },
     signIn: async ({ user }) => {
