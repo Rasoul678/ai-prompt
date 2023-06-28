@@ -15,17 +15,17 @@ type ArgsType = {
   data: any;
 };
 
-export const addDocument = async (args: ArgsType) => {
-  let result = null;
+export const addDocument = async <T>(args: ArgsType) => {
+  let result: T | null = null;
   let error = null;
 
   try {
     if (args.id) {
-      result = await setDoc(doc(db, args.colllection, args.id), args.data, {
+      result = (await setDoc(doc(db, args.colllection, args.id), args.data, {
         merge: true,
-      });
+      })) as T;
     } else {
-      result = await addDoc(collection(db, args.colllection), args.data);
+      result = (await addDoc(collection(db, args.colllection), args.data)) as T;
     }
   } catch (e) {
     error = e;

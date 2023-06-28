@@ -1,3 +1,4 @@
+import { PromptType } from "@types";
 import { addDocument } from "@utils/firebase/firestore";
 import type { NextRequest } from "next/server";
 
@@ -5,13 +6,13 @@ export const POST = async (req: NextRequest) => {
   const { userId, prompt, tag } = await req.json();
 
   try {
-    const newPrompt = {
-      creator: userId,
+    const newPrompt: Omit<PromptType, "_id"> = {
+      creator_id: userId,
       prompt,
       tag,
     };
 
-    const { error } = await addDocument({
+    const { error } = await addDocument<PromptType>({
       colllection: "prompts",
       data: newPrompt,
     });

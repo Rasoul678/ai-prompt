@@ -1,10 +1,11 @@
-import NextAuth from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
+import { UserType } from "@types";
 import {
   addDocument,
   getDocument,
   getDocumentBy,
 } from "@utils/firebase/firestore";
+import NextAuth from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
 
 const handler = NextAuth({
   providers: [
@@ -35,7 +36,7 @@ const handler = NextAuth({
 
       try {
         // //! Check if a user already exists
-        const { result, error: errInGet } = await getDocument({
+        const { error: errInGet, exists } = await getDocument<UserType>({
           collection: "users",
           id: user.id,
         });
@@ -45,14 +46,14 @@ const handler = NextAuth({
         }
 
         // //! If not, create a new user
-        if (!result?.exists()) {
+        if (!exists) {
           const newUser = {
             email: user!.email,
             username: user!.name?.replace(" ", "").toLowerCase(),
             image: user!.image,
           };
 
-          const { error: errInAdd } = await addDocument({
+          const { error: errInAdd } = await addDocument<UserType>({
             colllection: "users",
             id: user.id,
             data: newUser,

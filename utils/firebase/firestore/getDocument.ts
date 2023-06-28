@@ -8,17 +8,20 @@ type ArgsType = {
   id: string;
 };
 
-export const getDocument = async (args: ArgsType) => {
-  let docRef = doc(db, args.collection, args.id);
+export const getDocument = async <T>(args: ArgsType) => {
+  const docRef = doc(db, args.collection, args.id);
 
-  let result = null;
+  let result: T | null = null;
   let error = null;
+  let exists = null;
 
   try {
-    result = await getDoc(docRef);
+    const document = await getDoc(docRef);
+    exists = document.exists;
+    result = { ...document.data(), _id: document.id } as T;
   } catch (e) {
     error = e;
   }
 
-  return { result, error };
+  return { result, error, exists };
 };
