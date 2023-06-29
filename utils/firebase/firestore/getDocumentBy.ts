@@ -10,16 +10,17 @@ import {
 
 const db = getFirestore(firebase_app);
 
-type ArgsType = {
+// type GetArrayReturnType<T> = T extends () => (infer U)[] ? U : never;
+
+type ArgsType<T> = {
   collection: string;
   where: string;
   needle?: string | null;
 };
 
-export const getDocumentBy = async <T>(args: ArgsType) => {
+export const getDocumentBy = async <T>(args: ArgsType<T>) => {
   let docRef = collection(db, args.collection);
   const q = query(docRef, where(args.where, "==", args.needle));
-
   let result: T | null = null;
   let error = null;
 

@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 interface IProps {
   prompt: PromptWithCreatorType;
-  handleTagClick: (tag: string) => void;
+  handleTagClick?: (tag: string) => void;
   handleEdit: () => void;
   handleDelete: () => void;
 }
@@ -62,7 +62,7 @@ const PromptCard: React.FC<IProps> = (props) => {
       </p>
       <p
         className="font-inter text-sm blue_gradient cursor-pointer"
-        onClick={() => handleTagClick(prompt.prompt.tag)}
+        onClick={() => handleTagClick?.(prompt.prompt.tag)}
       >
         {prompt.prompt.tag}
       </p>

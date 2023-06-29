@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import PromptCard from "./PromptCard";
-import { PromptType } from "@types";
+import { PromptWithCreatorType } from "@types";
 
 interface IFeedProps {}
 
 interface ICardListProps {
-  prompts: PromptType[];
+  prompts: PromptWithCreatorType[];
   handleTagClick: () => void;
 }
 
@@ -19,7 +19,7 @@ const PromptCardList: React.FC<ICardListProps> = ({
     <div className="mt-16 prompt_layout">
       {prompts.map((prompt) => (
         <PromptCard
-          key={prompt._id}
+          key={prompt.prompt._id}
           prompt={prompt}
           handleTagClick={handleTagClick}
           handleDelete={() => {}}
