@@ -17,6 +17,13 @@ const PromptCard: React.FC<IProps> = (props) => {
   const { prompt, handleDelete, handleEdit, handleTagClick } = props;
   const [copied, setCopied] = useState("");
 
+  const handleCopy = () => {
+    const promptText = prompt.prompt.prompt;
+    setCopied(promptText);
+    navigator.clipboard.writeText(promptText);
+    setTimeout(() => setCopied(""), 3000);
+  };
+
   return (
     <div className="prompt_card">
       <div className="flex justify-between items-start gap-5">
@@ -37,7 +44,7 @@ const PromptCard: React.FC<IProps> = (props) => {
             </p>
           </div>
         </div>
-        <div className="copy_btn" onClick={() => {}}>
+        <div className="copy_btn" title="copy" onClick={handleCopy}>
           <Image
             src={
               copied === prompt.prompt.prompt
@@ -45,8 +52,8 @@ const PromptCard: React.FC<IProps> = (props) => {
                 : "/assets/icons/copy.svg"
             }
             alt="copy_btn"
-            width={12}
-            height={12}
+            width={16}
+            height={16}
           />
         </div>
       </div>
