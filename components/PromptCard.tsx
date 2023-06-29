@@ -9,8 +9,8 @@ import { usePathname, useRouter } from "next/navigation";
 interface IProps {
   prompt: PromptWithCreatorType;
   handleTagClick?: (tag: string) => void;
-  handleEdit: () => void;
-  handleDelete: () => void;
+  handleEdit?: () => void;
+  handleDelete?: () => void;
 }
 
 const PromptCard: React.FC<IProps> = (props) => {
