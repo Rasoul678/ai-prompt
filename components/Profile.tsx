@@ -6,8 +6,8 @@ interface IProps {
   name: string;
   description: string;
   data: PromptWithCreatorType[];
-  handleEdit: (prompt: PromptWithCreatorType) => void;
-  handleDelete: (prompt: PromptWithCreatorType) => void;
+  handleEdit?: (prompt: PromptWithCreatorType) => void;
+  handleDelete?: (prompt: PromptWithCreatorType) => void;
 }
 
 const Profile: React.FC<IProps> = (props) => {
@@ -24,8 +24,8 @@ const Profile: React.FC<IProps> = (props) => {
           <PromptCard
             key={prompt.prompt?._id}
             prompt={prompt}
-            handleDelete={() => handleDelete(prompt)}
-            handleEdit={() => handleEdit(prompt)}
+            handleDelete={() => handleDelete?.(prompt)}
+            handleEdit={() => handleEdit?.(prompt)}
           />
         ))}
       </div>

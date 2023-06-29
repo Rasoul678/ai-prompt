@@ -27,10 +27,25 @@ const PromptCard: React.FC<IProps> = (props) => {
     setTimeout(() => setCopied(""), 3000);
   };
 
+  const handleGoToProfile = () => {
+    const isAuthUser = session?.user.id === prompt.creator?._id;
+
+    if (isAuthUser) {
+      router.push(`/profile`);
+    } else {
+      router.push(
+        `/profile/${prompt.creator?._id}?name=${prompt.creator?.username}`
+      );
+    }
+  };
+
   return (
     <div className="prompt_card">
       <div className="flex justify-between items-start gap-5">
-        <div className="flex-1 flex justify-start items-center gap-3 cursor-pointer">
+        <div
+          className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
+          onClick={handleGoToProfile}
+        >
           <Image
             src={prompt.creator?.image || ""}
             alt="user_image"
