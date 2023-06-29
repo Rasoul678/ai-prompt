@@ -22,7 +22,7 @@ const Profile: React.FC<IProps> = (props) => {
       <div className="mt-10 prompt_layout">
         {data.map((prompt) => (
           <PromptCard
-            key={prompt.prompt._id}
+            key={prompt.prompt?._id}
             prompt={prompt}
             handleDelete={() => handleDelete(prompt)}
             handleEdit={() => handleEdit(prompt)}

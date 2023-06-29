@@ -13,6 +13,6 @@ export type UserType = {
 };
 
 export type PromptWithCreatorType = {
-  prompt: PromptType;
+  prompt: PromptType | null;
   creator: UserType | null;
 };

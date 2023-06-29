@@ -10,13 +10,12 @@ interface IProps {}
 
 const ProfilePage: React.FC<IProps> = (props) => {
   const { data: session } = useSession();
+  const router = useRouter();
   const [posts, setPosts] = useState<PromptWithCreatorType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch(
-        `/api/users/${session?.user.id}/prompts`
-      );
+      const response = await fetch(`/api/users/${session?.user.id}/prompts`);
       const data = await response.json();
       setPosts(data);
     };
@@ -26,15 +25,39 @@ const ProfilePage: React.FC<IProps> = (props) => {
     }
   }, [session]);
 
-  const handleEdit = () => {};
-  const handleDelete = async () => {};
+  const handleEdit = ({ prompt }: PromptWithCreatorType) => {
+    router.push(`/update-prompt?id=${prompt?._id}`);
+  };
+
+  const handleDelete = async ({ prompt }: PromptWithCreatorType) => {
+    const hasConfirmed = confirm(
+      "Are you sure you want to delete this prompt?"
+    );
+
+    if (hasConfirmed) {
+      try {
+        await fetch(`/api/prompt/${prompt?._id.toString()}`, {
+          method: "DELETE",
+        });
+
+        const filteredPosts = posts.filter(
+          (p) => p.prompt?._id !== prompt?._id
+        );
+
+        setPosts(filteredPosts);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <Profile
       name="My"
       description="Welcome to your personalized profile page"
       data={posts}
-      handleDelete={handleEdit}
-      handleEdit={handleDelete}
+      handleDelete={handleDelete}
+      handleEdit={handleEdit}
     />
   );
 };

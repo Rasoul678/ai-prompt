@@ -16,9 +16,12 @@ interface IProps {
 const PromptCard: React.FC<IProps> = (props) => {
   const { prompt, handleDelete, handleEdit, handleTagClick } = props;
   const [copied, setCopied] = useState("");
+  const { data: session } = useSession();
+  const pathName = usePathname();
+  const router = useRouter();
 
   const handleCopy = () => {
-    const promptText = prompt.prompt.prompt;
+    const promptText = String(prompt.prompt?.prompt);
     setCopied(promptText);
     navigator.clipboard.writeText(promptText);
     setTimeout(() => setCopied(""), 3000);
@@ -47,7 +50,7 @@ const PromptCard: React.FC<IProps> = (props) => {
         <div className="copy_btn" title="copy" onClick={handleCopy}>
           <Image
             src={
-              copied === prompt.prompt.prompt
+              copied === prompt.prompt?.prompt
                 ? "/assets/icons/tick.svg"
                 : "/assets/icons/copy.svg"
             }
@@ -58,14 +61,30 @@ const PromptCard: React.FC<IProps> = (props) => {
         </div>
       </div>
       <p className="my-4 font-satoshi text-sm text-gray-700">
-        {prompt.prompt.prompt}
+        {prompt.prompt?.prompt}
       </p>
       <p
         className="font-inter text-sm blue_gradient cursor-pointer"
-        onClick={() => handleTagClick?.(prompt.prompt.tag)}
+        onClick={() => handleTagClick?.(String(prompt.prompt?.tag))}
       >
-        {prompt.prompt.tag}
+        {prompt.prompt?.tag}
       </p>
+      {session?.user.id === prompt.creator?._id && pathName === "/profile" && (
+        <div className="mt-5 flex-end gap-4 border-t border-gray-100 pt-3">
+          <p
+            className=" font-inter text-sm green_gradient cursor-pointer"
+            onClick={handleEdit}
+          >
+            Edit
+          </p>
+          <p
+            className=" font-inter text-sm orange_gradient cursor-pointer"
+            onClick={handleDelete}
+          >
+            Delete
+          </p>
+        </div>
+      )}
     </div>
   );
 };

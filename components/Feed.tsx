@@ -19,7 +19,7 @@ const PromptCardList: React.FC<ICardListProps> = ({
     <div className="mt-16 prompt_layout">
       {prompts.map((prompt) => (
         <PromptCard
-          key={prompt.prompt._id}
+          key={prompt.prompt?._id}
           prompt={prompt}
           handleTagClick={handleTagClick}
           handleDelete={() => {}}
