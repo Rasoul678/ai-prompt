@@ -16,15 +16,16 @@ type ArgsType = {
   needle?: string | null;
 };
 
-export const getDocumentBy = async (args: ArgsType) => {
+export const getDocumentBy = async <T>(args: ArgsType) => {
   let docRef = collection(db, args.collection);
   const q = query(docRef, where(args.where, "==", args.needle));
 
-  let result = null;
+  let result: T | null = null;
   let error = null;
 
   try {
-    result = await getDocs(q);
+    const documents = await getDocs(q);
+    result = documents.docs.map((doc) => ({ ...doc.data(), _id: doc.id })) as T;
   } catch (e) {
     error = e;
   }

@@ -16,19 +16,13 @@ const handler = NextAuth({
   ],
   callbacks: {
     session: async ({ session }) => {
-      const querySnapshot = await getDocumentBy({
+      const { result: users } = await getDocumentBy<UserType[]>({
         collection: "users",
         where: "email",
         needle: session.user.email,
       });
 
-      const userIds: string[] = [];
-
-      querySnapshot.result?.forEach((doc) => {
-        userIds.push(doc.id);
-      });
-
-      session.user.id = userIds[0];
+      session.user.id = users?.[0]._id || "";
       return session;
     },
     signIn: async ({ user }) => {
