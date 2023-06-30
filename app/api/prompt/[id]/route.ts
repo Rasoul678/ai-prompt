@@ -5,6 +5,7 @@ import {
 } from "@utils/firebase/firestore";
 import type { NextRequest } from "next/server";
 import { PromptWithCreatorType, UserType, PromptType } from "@types";
+import { serverService } from "@services";
 
 //! GET (read)
 export const GET = async (
@@ -12,33 +13,16 @@ export const GET = async (
   { params }: { params: { id: string } }
 ) => {
   try {
-    const {
-      error,
-      result: prompt,
-      exists,
-    } = await getDocument<PromptType>({
-      collection: "prompts",
-      id: params.id,
-    });
+    const { error, exists, post } = await serverService.getPostById(params.id);
 
     if (!exists) {
       return new Response("Prompt not found!", { status: 404 });
     }
 
-    const { result: user } = await getDocument<UserType>({
-      collection: "users",
-      id: prompt?.creator_id || "",
-    });
-
-    const results: PromptWithCreatorType = {
-      prompt,
-      creator: user,
-    };
-
     if (error) {
       return new Response("Failed to fetch user's prompt", { status: 500 });
     } else {
-      return new Response(JSON.stringify(results), { status: 200 });
+      return new Response(JSON.stringify(post), { status: 200 });
     }
   } catch (error) {
     return new Response("Failed to fetch user's prompt", { status: 500 });

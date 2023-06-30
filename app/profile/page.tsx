@@ -1,64 +1,31 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Profile from "@components/Profile";
+import getQueryClient from "@utils/react-query/getQueryClient";
+import MyProfile from "./MyProfile";
+import { dehydrate } from "@tanstack/react-query";
+import { serverService } from "@services";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@utils/auth/authOptions";
+import Hydrate from "@utils/react-query/hydrate.client";
 import { PromptWithCreatorType } from "@types";
 
-interface IProps {}
+const getUserPosts = async () => {
+  const session = await getServerSession(authOptions);
+  let posts: PromptWithCreatorType[] | null = [];
 
-const ProfilePage: React.FC<IProps> = (props) => {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [posts, setPosts] = useState<PromptWithCreatorType[]>([]);
+  if (session?.user.id) {
+    ({ posts } = await serverService.getUserPosts(session?.user.id));
+  }
+  return posts ?? [];
+};
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`/api/users/${session?.user.id}/prompts`);
-      const data = await response.json();
-      setPosts(data);
-    };
-
-    if (session?.user.id) {
-      fetchPosts();
-    }
-  }, [session]);
-
-  const handleEdit = ({ prompt }: PromptWithCreatorType) => {
-    router.push(`/update-prompt?id=${prompt?._id}`);
-  };
-
-  const handleDelete = async ({ prompt }: PromptWithCreatorType) => {
-    const hasConfirmed = confirm(
-      "Are you sure you want to delete this prompt?"
-    );
-
-    if (hasConfirmed) {
-      try {
-        await fetch(`/api/prompt/${prompt?._id.toString()}`, {
-          method: "DELETE",
-        });
-
-        const filteredPosts = posts.filter(
-          (p) => p.prompt?._id !== prompt?._id
-        );
-
-        setPosts(filteredPosts);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+const ProfilePage = async () => {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(["hydrate-user-posts"], getUserPosts);
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <Profile
-      name="My"
-      description="Welcome to your personalized profile page"
-      data={posts}
-      handleDelete={handleDelete}
-      handleEdit={handleEdit}
-    />
+    <Hydrate state={dehydratedState}>
+      <MyProfile />
+    </Hydrate>
   );
 };
 

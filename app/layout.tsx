@@ -1,7 +1,8 @@
-import "@styles/globals.css";
-import Nav from "@components/Nav";
-import Provider from "@components/Provider";
 import { Session } from "next-auth";
+import Nav from "@components/Nav";
+import SessionProvider from "@components/Provider";
+import RQProvider from "@utils/react-query/provider";
+import "@styles/globals.css";
 
 interface IProps {
   session: Session | null;
@@ -17,15 +18,17 @@ const RootLayout = ({ children, session }: IProps) => {
   return (
     <html lang="en">
       <body>
-        <Provider session={session}>
-          <div className="main">
-            <div className="gradient" />
-          </div>
-          <main className="app">
-            <Nav />
-            {children}
-          </main>
-        </Provider>
+        <RQProvider>
+          <SessionProvider session={session}>
+            <div className="main">
+              <div className="gradient" />
+            </div>
+            <main className="app">
+              <Nav />
+              {children}
+            </main>
+          </SessionProvider>
+        </RQProvider>
       </body>
     </html>
   );

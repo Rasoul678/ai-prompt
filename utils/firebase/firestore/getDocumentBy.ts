@@ -23,13 +23,15 @@ export const getDocumentBy = async <T>(args: ArgsType<T>) => {
   const q = query(docRef, where(args.where, "==", args.needle));
   let result: T | null = null;
   let error = null;
+  let exists = false;
 
   try {
     const documents = await getDocs(q);
     result = documents.docs.map((doc) => ({ ...doc.data(), _id: doc.id })) as T;
+    exists = !documents.empty;
   } catch (e) {
     error = e;
   }
 
-  return { result, error };
+  return { result, error, exists };
 };

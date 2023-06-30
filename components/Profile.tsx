@@ -6,12 +6,25 @@ interface IProps {
   name: string;
   description: string;
   data: PromptWithCreatorType[];
+  isLoading?: boolean;
+  isFetching?: boolean;
+  error?: any;
+
   handleEdit?: (prompt: PromptWithCreatorType) => void;
   handleDelete?: (prompt: PromptWithCreatorType) => void;
 }
 
 const Profile: React.FC<IProps> = (props) => {
-  const { data, description, handleDelete, handleEdit, name } = props;
+  const {
+    data,
+    description,
+    handleDelete,
+    handleEdit,
+    name,
+    error,
+    isLoading,
+    isFetching,
+  } = props;
 
   return (
     <section className="w-full">
@@ -20,14 +33,22 @@ const Profile: React.FC<IProps> = (props) => {
       </h1>
       <p className="desc text-left">{description}</p>
       <div className="mt-10 prompt_layout">
-        {data.map((prompt) => (
-          <PromptCard
-            key={prompt.prompt?._id}
-            prompt={prompt}
-            handleDelete={() => handleDelete?.(prompt)}
-            handleEdit={() => handleEdit?.(prompt)}
-          />
-        ))}
+        {error ? (
+          <p>Oh no, there was an error</p>
+        ) : isLoading || isFetching ? (
+          <p>Loading profile...</p>
+        ) : data ? (
+          <>
+            {data.map((prompt) => (
+              <PromptCard
+                key={prompt.prompt?._id}
+                prompt={prompt}
+                handleDelete={() => handleDelete?.(prompt)}
+                handleEdit={() => handleEdit?.(prompt)}
+              />
+            ))}
+          </>
+        ) : null}
       </div>
     </section>
   );
