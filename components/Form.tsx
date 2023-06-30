@@ -1,15 +1,13 @@
 import React, { Dispatch, SetStateAction } from "react";
 import Link from "next/link";
+import { PromptType } from "@types";
 
-type Post = {
-  prompt: string;
-  tag: string;
-};
+export type EditPostType = Partial<PromptType> | null | undefined;
 
 interface IProps {
   type: string;
-  post: Post;
-  setPost: Dispatch<SetStateAction<Post>>;
+  post: EditPostType;
+  setPost: Dispatch<SetStateAction<EditPostType>>;
   submitting: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -35,7 +33,7 @@ const Form: React.FC<IProps> = (props) => {
             Your AI Prompt
           </span>
           <textarea
-            value={post.prompt}
+            value={post?.prompt}
             onChange={(e) => setPost({ ...post, prompt: e.target.value })}
             placeholder="Write your prompt here..."
             required
@@ -50,7 +48,7 @@ const Form: React.FC<IProps> = (props) => {
             </span>
           </span>
           <input
-            value={post.tag}
+            value={post?.tag}
             onChange={(e) => setPost({ ...post, tag: e.target.value })}
             placeholder="#tag"
             required

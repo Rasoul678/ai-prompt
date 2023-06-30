@@ -1,68 +1,34 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-
-import Form from "@components/Form";
+import getQueryClient from "@utils/react-query/getQueryClient";
+import UpdatePrompt from "./UpdatePrompt";
+import { dehydrate } from "@tanstack/react-query";
+import Hydrate from "@utils/react-query/hydrate.client";
+import { getServerSession } from "next-auth";
+import { serverService } from "@services";
 import { PromptWithCreatorType } from "@types";
+import { authOptions } from "@utils/auth/authOptions";
 
-interface IProps {}
+interface IProps {
+  searchParams?: Record<string, string | undefined>;
+}
 
-const EditPrompt: React.FC<IProps> = (props) => {
-  const [submitting, setSubmitting] = useState(false);
-  const [post, setPost] = useState({ prompt: "", tag: "" });
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const promptId = searchParams.get("id");
+const getUserPost = async (promptId: string) => {
+  const { post } = await serverService.getPostById(promptId);
+  return post;
+};
 
-  useEffect(() => {
-    const getPromptDetails = async () => {
-      const response = await fetch(`/api/prompt/${promptId}`);
-      const data = (await response.json()) as PromptWithCreatorType;
-
-      setPost({
-        prompt: data.prompt?.prompt || "",
-        tag: data.prompt?.tag || "",
-      });
-    };
-
-    if (promptId) {
-      getPromptDetails();
-    }
-  }, [promptId]);
-
-  const updatePrompt = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitting(true);
-
-    if (!promptId) return;
-
-    try {
-      const response = await fetch(`/api/prompt/${promptId}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          ...post,
-        }),
-      });
-
-      if (response.ok) {
-        router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+const EditPrompt: React.FC<IProps> = async (props) => {
+  const { searchParams } = props;
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(
+    ["hydrate-user-post"],
+    async () => await getUserPost(searchParams?.id as string)
+  );
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <Form
-      type="Edit"
-      post={post}
-      setPost={setPost}
-      submitting={submitting}
-      handleSubmit={updatePrompt}
-    />
+    <Hydrate state={dehydratedState}>
+      <UpdatePrompt />
+    </Hydrate>
   );
 };
 

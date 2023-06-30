@@ -1,7 +1,5 @@
-import { getDocument, getDocumentBy } from "@utils/firebase/firestore";
-import type { NextRequest } from "next/server";
-import { PromptWithCreatorType, UserType, PromptType } from "@types";
 import { serverService } from "@services";
+import type { NextRequest } from "next/server";
 
 export const GET = async (
   req: NextRequest,

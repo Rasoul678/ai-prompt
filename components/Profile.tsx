@@ -7,7 +7,6 @@ interface IProps {
   description: string;
   data: PromptWithCreatorType[];
   isLoading?: boolean;
-  isFetching?: boolean;
   error?: any;
 
   handleEdit?: (prompt: PromptWithCreatorType) => void;
@@ -23,7 +22,6 @@ const Profile: React.FC<IProps> = (props) => {
     name,
     error,
     isLoading,
-    isFetching,
   } = props;
 
   return (
@@ -35,7 +33,7 @@ const Profile: React.FC<IProps> = (props) => {
       <div className="mt-10 prompt_layout">
         {error ? (
           <p>Oh no, there was an error</p>
-        ) : isLoading || isFetching ? (
+        ) : isLoading ? (
           <p>Loading profile...</p>
         ) : data ? (
           <>

@@ -9,8 +9,14 @@ class APIClientSide {
 
   public getUserPosts = async (userId: string | undefined) => {
     const response = await fetch(`/api/users/${userId}/prompts`);
-    const posts = await response.json();
+    const posts = (await response.json()) as PromptWithCreatorType[];
     return posts;
+  };
+
+  public getUserPost = async (promptId: string | null) => {
+    const response = await fetch(`/api/prompt/${promptId}`);
+    const post = (await response.json()) as PromptWithCreatorType;
+    return post;
   };
 }
 

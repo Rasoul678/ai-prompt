@@ -45,6 +45,7 @@ const Feed = () => {
   } = useQuery({
     queryKey: ["hydrate-posts"],
     queryFn: () => clientService.getAllPosts(),
+    keepPreviousData: true,
   });
 
   const filterPosts = (searchText: string) => {
@@ -93,7 +94,7 @@ const Feed = () => {
       </form>
       {error ? (
         <p>Oh no, there was an error</p>
-      ) : isLoading || isFetching ? (
+      ) : isLoading ? (
         <p>Loading...</p>
       ) : allPosts ? (
         <PromptCardList

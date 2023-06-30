@@ -8,11 +8,11 @@ import Hydrate from "@utils/react-query/hydrate.client";
 import { PromptWithCreatorType } from "@types";
 
 const getUserPosts = async () => {
-  const session = await getServerSession(authOptions);
+  const serverSession = await getServerSession(authOptions);
   let posts: PromptWithCreatorType[] | null = [];
 
-  if (session?.user.id) {
-    ({ posts } = await serverService.getUserPosts(session?.user.id));
+  if (serverSession?.user.id) {
+    ({ posts } = await serverService.getUserPosts(serverSession?.user.id));
   }
   return posts ?? [];
 };
