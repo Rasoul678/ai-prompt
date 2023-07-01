@@ -1,11 +1,8 @@
-import getQueryClient from "@utils/react-query/getQueryClient";
-import UpdatePrompt from "./UpdatePrompt";
-import { dehydrate } from "@tanstack/react-query";
-import Hydrate from "@utils/react-query/hydrate.client";
-import { getServerSession } from "next-auth";
 import { serverService } from "@services";
-import { PromptWithCreatorType } from "@types";
-import { authOptions } from "@utils/auth/authOptions";
+import { dehydrate } from "@tanstack/react-query";
+import getQueryClient from "@utils/react-query/getQueryClient";
+import Hydrate from "@utils/react-query/hydrate.client";
+import UpdatePrompt from "./UpdatePrompt";
 
 interface IProps {
   searchParams?: Record<string, string | undefined>;

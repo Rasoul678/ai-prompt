@@ -1,37 +1,34 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import Profile from "@components/Profile";
-import { PromptWithCreatorType } from "@types";
+import React from "react";
+import { serverService } from "@services";
+import { dehydrate } from "@tanstack/react-query";
+import getQueryClient from "@utils/react-query/getQueryClient";
+import UserProfile from "./UserProfile";
+import Hydrate from "@utils/react-query/hydrate.client";
 
 interface IProps {
   params: { id: string };
+  searchParams?: Record<string, string | undefined>;
 }
 
-const ProfilePage: React.FC<IProps> = ({ params }) => {
-  const searchParams = useSearchParams();
-  const userName = searchParams.get("name") || "";
-  const [userPosts, setUserPosts] = useState<PromptWithCreatorType[]>([]);
+const getUserPosts = async (userId: string) => {
+  const { posts } = await serverService.getUserPosts(userId);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`/api/users/${params?.id}/prompts`);
-      const data = await response.json();
-      setUserPosts(data);
-    };
+  return posts;
+};
 
-    if (params.id) {
-      fetchPosts();
-    }
-  }, [params.id]);
+const ProfilePage: React.FC<IProps> = async ({ params, searchParams }) => {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(
+    ["hydrate-user-posts"],
+    async () => await getUserPosts(params.id)
+  );
+  const dehydratedState = dehydrate(queryClient);
+  const userName = searchParams?.name as string;
 
   return (
-    <Profile
-      name={userName}
-      description={`Welcome to ${userName}'s personalized profile page. Explore ${userName}'s exceptional prompts and be inspired by the power of their imagination`}
-      data={userPosts}
-    />
+    <Hydrate state={dehydratedState}>
+      <UserProfile params={params} userName={userName} />
+    </Hydrate>
   );
 };
 
