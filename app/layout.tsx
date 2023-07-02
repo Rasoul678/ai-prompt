@@ -1,4 +1,5 @@
 import { Session } from "next-auth";
+import NextTopLoader from "nextjs-toploader";
 import Nav from "@components/Nav";
 import SessionProvider from "@components/Provider";
 import RQProvider from "@utils/react-query/provider";
@@ -18,6 +19,17 @@ const RootLayout = ({ children, session }: IProps) => {
   return (
     <html lang="en">
       <body>
+        <NextTopLoader
+          color="#2299DD"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={4}
+          crawl={true}
+          showSpinner={true}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+        />
         <RQProvider>
           <SessionProvider session={session}>
             <div className="main">
