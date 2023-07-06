@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import Form from "@components/Form";
+import Form, { EditPostType } from "@components/Form";
 
 interface IProps {}
 
 const CreatePrompt: React.FC<IProps> = (props) => {
   const [submitting, setSubmitting] = useState(false);
-  const [post, setPost] = useState({ prompt: "", tag: "" });
+  const [post, setPost] = useState<EditPostType>({ prompt: "", tag: "" });
   const { data: session } = useSession();
   const router = useRouter();
 
